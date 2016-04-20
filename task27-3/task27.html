@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task27</title>
+    <script src="ToolKit.js"></script>
+    <script src="Log.js"></script>
+    <script src="Adapter.js"></script>
+    <script src="BroadcastManager.js"></script>
+    <script src="strings.js"></script>
+    <script src="BUS.js"></script>
+    <script src="Mediator.js"></script>
+    <script src="SpaceManager.js"></script>
+    <script src="Planet.js"></script>
+    <script src="Spaceship.js"></script>
+    <link rel="stylesheet" href="task27.css">
+</head>
+
+<body>
+<div id="control-panel">
+    <div id="control-title">Control Panel</div>
+    <div id="control-main">
+        <div data-id="1">
+            <span>Orbit-1</span>
+            <button type="button" data-type="create" data-status="create">Create</button>
+            <button type="button" data-type="drive" data-status="start" disabled="disabled">Start</button>
+            <label for="engine-1">EngineSystem:</label><select id="engine-1" class="engine" disabled="false"></select>
+            <label for="power-1">PowerSystem:</label><select id="power-1" class="power" disabled="false"></select>
+        </div>
+        <div data-id="2">
+            <span>Orbit-2</span>
+            <button type="button" data-type="create" data-status="create">Create</button>
+            <button type="button" data-type="drive" data-status="start" disabled="disabled">Start</button>
+            <label for="engine-2">EngineSystem:</label><select id="engine-2" class="engine" disabled="false"></select>
+            <label for="power-2">PowerSystem:</label><select id="power-2" class="power" disabled="false"></select>
+        </div>
+        <div data-id="3">
+            <span>Orbit-3</span>
+            <button type="button" data-type="create" data-status="create">Create</button>
+            <button type="button" data-type="drive" data-status="start" disabled="disabled">Start</button>
+            <label for="engine-3">EngineSystem:</label><select id="engine-3" class="engine" disabled="false"></select>
+            <label for="power-3">PowerSystem:</label><select id="power-3" class="power" disabled="false"></select>
+        </div>
+        <div data-id="4">
+            <span>Orbit-4</span>
+            <button type="button" data-type="create" data-status="create">Create</button>
+            <button type="button" data-type="drive" data-status="start" disabled="disabled">Start</button>
+            <label for="engine-4">EngineSystem:</label><select id="engine-4" class="engine" disabled="false"></select>
+            <label for="power-4">PowerSystem:</label><select id="power-4" class="power" disabled="true"></select>
+        </div>
+    </div>
+</div>
+
+<div id="console">
+    <div id="console-title">Console</div>
+    <div id="console-text"></div>
+</div>
+
+<div id="planet"></div>
+<div id="orbit-1" class="orbit"></div>
+<div id="orbit-2" class="orbit"></div>
+<div id="orbit-3" class="orbit"></div>
+<div id="orbit-4" class="orbit"></div>
+<script>
+    (function () {
+        var engineType = ["Endeavour", "Pentium", "Beyond"];
+        var powerType = ["Energizer", "Solar", "Permanent"];
+
+        var engineList = document.getElementsByClassName("engine");
+        for (var i = 0; i < engineType.length; i++) {
+            for (var j = 0; j < engineList.length; j++) {
+                option = document.createElement("option");
+                option.value = i;
+                option.innerText = engineType[i];
+                engineList[j].appendChild(option);
+                engineList[j].disabled = false;
+            }
+        }
+        var powerList = document.getElementsByClassName("power");
+        for (var i = 0; i < powerType.length; i++) {
+            for (var j = 0; j < powerList.length; j++) {
+                option = document.createElement("option");
+                option.id = i;
+                option.innerText = powerType[i];
+                powerList[j].appendChild(option);
+                powerList[j].disabled = false;
+            }
+        }
+
+        Log.setBoard("console-text");
+        var planet = new Planet();
+
+        BroadcastManager.register(BROADCAST.PLANET_SRC);
+
+        FloatWindow("control-panel", "control-title", EPosition.CENTER, EPosition.BOTTOM);
+        FloatWindow("console", "console-title", EPosition.RIGHT, EPosition.TOP);
+        var buttons = document.getElementsByTagName("button");
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].onclick = buttonClick;
+        }
+
+        SpaceManager.timeTick();
+
+        function buttonClick() {
+            var orbitID = parseInt(this.parentNode.dataset.id);
+            var instruct = this.dataset.type;
+            switch (instruct) {
+                case "create":
+                    if (this.dataset.status == 'create') {
+                        var driveType = parseInt(this.nextElementSibling.nextElementSibling.nextElementSibling.value);
+                        var powerType = parseInt(this.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.value);
+                        planet.launch(orbitID, driveType, powerType);
+                        this.dataset.status = "created";
+                        this.innerText = "Destroy";
+                        this.nextElementSibling.disabled = false;
+                        this.nextElementSibling.nextElementSibling.nextElementSibling.disabled = true;
+                        this.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.disabled = true;
+
+                    }
+                    else {
+                        planet.destroy(orbitID);
+                        this.dataset.status = 'create';
+                        this.innerText = "Create ";
+                        this.nextElementSibling.disabled = true;
+                        this.nextElementSibling.dataset.status = "start";
+                        this.nextElementSibling.innerText = "Start";
+                        this.nextElementSibling.nextElementSibling.nextElementSibling.disabled = false;
+                        this.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.disabled = false;
+                    }
+                    break;
+                case "drive":
+                    if (this.dataset.status == "start") {
+                        planet.start(orbitID);
+                        this.dataset.status = "stop";
+                        this.innerText = "Stop";
+                    }
+                    else {
+                        planet.stop(orbitID);
+                        this.dataset.status = "start";
+                        this.innerText = "Start";
+                    }
+                    break;
+            }
+        }
+    })();
+
+
+</script>
+</body>
+</html>
