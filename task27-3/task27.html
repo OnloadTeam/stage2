@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Task28</title>
+    <title>Task27</title>
     <script src="ToolKit.js"></script>
     <script src="Log.js"></script>
     <script src="Adapter.js"></script>
-    <script src="Monitor.js"></script>
     <script src="BroadcastManager.js"></script>
     <script src="strings.js"></script>
     <script src="BUS.js"></script>
@@ -14,8 +13,7 @@
     <script src="SpaceManager.js"></script>
     <script src="Planet.js"></script>
     <script src="Spaceship.js"></script>
-    <script src="DataCenter.js"></script>
-    <link rel="stylesheet" href="task28.css">
+    <link rel="stylesheet" href="task27.css">
 </head>
 
 <body>
@@ -59,19 +57,11 @@
 </div>
 
 <div id="planet"></div>
-
-<div id="monitor">
-    <div id="monitor-title">Monitor</div>
-    <table id="monitor-main"></table>
-</div>
-
 <div id="orbit-1" class="orbit"></div>
 <div id="orbit-2" class="orbit"></div>
 <div id="orbit-3" class="orbit"></div>
 <div id="orbit-4" class="orbit"></div>
 <script>
-
-
     (function () {
         var engineType = ["Endeavour", "Pentium", "Beyond"];
         var powerType = ["Energizer", "Solar", "Permanent"];
@@ -90,7 +80,7 @@
         for (var i = 0; i < powerType.length; i++) {
             for (var j = 0; j < powerList.length; j++) {
                 option = document.createElement("option");
-                option.value = i;
+                option.id = i;
                 option.innerText = powerType[i];
                 powerList[j].appendChild(option);
                 powerList[j].disabled = false;
@@ -98,17 +88,12 @@
         }
 
         Log.setBoard("console-text");
-        Monitor.setMonitor("monitor-main");
         var planet = new Planet();
 
         BroadcastManager.register(BROADCAST.PLANET_SRC);
-        BroadcastManager.register(BROADCAST.SHIP_SRC);
-        BroadcastManager.bind(BROADCAST.SHIP_SRC, planet);
 
         FloatWindow("control-panel", "control-title", EPosition.CENTER, EPosition.BOTTOM);
         FloatWindow("console", "console-title", EPosition.RIGHT, EPosition.TOP);
-        FloatWindow("monitor", "monitor-title", EPosition.LEFT, EPosition.TOP);
-
         var buttons = document.getElementsByTagName("button");
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].onclick = buttonClick;
