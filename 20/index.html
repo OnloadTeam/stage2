@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>task20</title>
+	<meta charset=utf-8>
+	<style type="text/css">
+	html,
+	body{
+		padding:0;
+		margin: 0;
+	}
+	#numList{height: 60px;}
+	#numList div{display: inline-block;height:40px;min-width: 40px;margin: 10px; background-color: red;color: #fff;line-height: 40px;text-align: center;font-weight: bold;font-size: 14px;vertical-align: bottom;/*设置vertical-align的原因是：因为默认是基线居中的，如果文字过多(设置的是固定的宽度，不是最小宽度)就会出现所有的span不一定显示在同一行，有心者可以自行尝试(把min-width改为width)*/}
+	.bac{background-color: green;}
+	</style>
+</head>
+<body>
+<textarea id="iText"></textarea>
+<input id="leftPush" type="submit" value="左侧入">
+<input id="rightPush" type="submit" value="右入">
+<input id="leftPop" type="submit" value="左侧出">
+<input id="rightPop" type="submit" value="右侧出">
+<label><input type="text" id="selKey" placeholder="请输入您要查询的关键字" /></label>
+<input type="button" id="selKeyBtn" value="提交" />
+<br />
+<span id="errorInfo"></span>
+<div id="numList">
+	
+</div>
+<script type="text/javascript">
+
+window.onload=function(){
+
+	var iText    =  document.getElementById('iText'),
+		leftPush =  document.getElementById('leftPush'),
+		rightPush=  document.getElementById('rightPush'),
+		rightPop =  document.getElementById('rightPop'),
+		numList  =  document.getElementById('numList'),
+		errorInfo=  document.getElementById('errorInfo'),
+		selKey   =  document.getElementById('selKey'),
+		selKeyBtn=  document.getElementById('selKeyBtn');
+	var flag =false;
+
+
+	/*
+	+* 入队列函数
+	 */
+	function pushQueue(dir){
+		var sign= false;
+		var msg = /[\w\d\u4E00-\u9FA5\uF900-\uFA2D]+/g;
+		var inputValue = iText.value.match(msg);   //把内容要求变为数组的形式
+		var tagLen     = inputValue.length;
+		for(var i=0;i<tagLen;i++){
+			sign           = false;
+			var divList    = numList.getElementsByTagName('div'),
+				divListLen = divList.length;
+			for(var j=0;j<divListLen;j++){
+				if(divList[j].innerHTML  == inputValue[i]){
+					sign = true;
+				}
+			}
+			if(sign == true){
+				continue;
+			}
+			var spanNode   = document.createElement('div');
+			spanNode.style.display = "inline-block";
+			spanNode.textContent =inputValue[i];
+			if(dir == 'left'){
+				if(numList.firstElementChild == null){
+					numList.appendChild(spanNode);
+				}else{
+					numList.insertBefore(spanNode,numList.firstElementChild);
+				}
+			}else if(dir == 'right'){
+				numList.appendChild(spanNode);
+			}
+		}
+	}
+	/*
+	* 出队函数
+	 */
+	function popQueue(dir){
+		if(dir == 'left'){
+			numList.removeChild(numList.firstElementChild);
+		}else if(dir == 'right'){
+			numList.removeChild(numList.lastElementChild);
+		}
+	}
+	leftPush.onclick=function(){
+		if(!flag){
+			pushQueue('left');	
+		}
+	}
+	rightPush.onclick=function(){
+		if(!flag){
+			pushQueue('right');
+		}
+	}
+	leftPop.onclick=function(){
+		popQueue('left');
+	};
+	rightPop.onclick=function(){
+		popQueue('right');
+	};
+	selKeyBtn.onclick=function(){
+		var selKeyVal = selKey.value;
+		var spanLen = numList.childElementCount;
+		var spanList= numList.getElementsByTagName('div');
+		for(var i=0;i<spanLen;i++){
+			var replaceStr         = document.createElement('span');
+			replaceStr.textContent = selKeyVal;
+			replaceStr.style.background = 'green';
+			var tempStr            = spanList[i].innerHTML.replace(eval("/"+selKeyVal+"/g"),"<span class='bac'>"+selKeyVal+'</span>');
+			spanList[i].innerHTML = tempStr;
+		}
+
+	}
+
+}
+</script>
+</body>
+</html>

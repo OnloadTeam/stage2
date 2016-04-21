@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Task 21</title>
+	<script type="text/javascript" src="task21.js"></script>
+	<style type="text/css">
+	html,body,div{margin:0;padding: 0;}
+	#tagList>span,#interestList>div{display: inline-block;height:40px;min-width: 40px;margin: 10px; background-color: red;color: #fff;line-height: 40px;text-align: center;font-weight: bold;font-size: 14px;vertical-align: bottom;}
+	#tagList  span{background-color: green;}
+	</style>
+</head>
+<body>
+	<label>Tag:<input type="text" onkeyup="pushTag(event);" id="tagText" /></label>
+	<div id="tagList"></div>
+	<label><textarea id="interestText"/></textarea></label><br>
+	<label><input type="button" id="interestBtn"  value="确认兴趣爱好" /></label>
+	<div id="interestList"></div>
+</body>
+<script type="text/javascript">
+	function pushTag(e){
+		var textValue  = tagText.value;
+		var tagListCon = tagList.getElementsByTagName('span');
+		var tagListLen = tagListCon.length; 
+		if((e.keyCode  == 188)||(e.keyCode  == 13)||(textValue.charAt(textValue.length-1)  == ' ')&&textValue!= '  '){
+			//alert(textValue == '  ');
+			if(e.keyCode  == 188||e.keyCode  == 32){
+				textValue = textValue.substring(0,textValue.length-1);
+			}
+			for(var i=0;i<tagListLen;i++){
+				if(textValue == tagListCon[i].innerText){
+					tagText.value = null;
+					return false;
+				}
+			}
+			var divNode  =  document.createElement('span');
+			divNode.textContent  =  textValue;
+			if(tagList.firstElementChild == null){
+				tagList.appendChild(divNode);
+			}else{
+				tagList.insertBefore(divNode,tagList.firstElementChild);
+			}
+			tagText.value = null;
+
+			if(tagList.childElementCount >10){
+				tagList.removeChild(tagList.lastElementChild);
+			}
+		}
+	}
+</script>
+</html>
