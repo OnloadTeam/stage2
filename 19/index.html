@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>task19</title>
+	<meta charset=utf-8>
+	<style type="text/css">
+	html,
+	body{
+		padding:0;
+		margin: 0;
+	}
+	#numList{height: 60px;}
+	#numList span{display: inline-block;height:40px;width: 40px;margin: 10px; background-color: red;color: #fff;line-height: 40px;text-align: center;font-weight: bold;font-size: 14px;}
+	</style>
+</head>
+<body>
+<input type="text" id="iText">
+<input id="leftPush" type="submit" value="左侧入">
+<input id="rightPush" type="submit" value="右入">
+<input id="leftPop" type="submit" value="左侧出">
+<input id="rightPop" type="submit" value="右侧出"><br />
+<span id="errorInfo"></span>
+<div id="numList"></div>
+<button style="margin-bottom: 25px;">点击开始排序</button>
+<div id="sortArea"></div>
+<script type="text/javascript">
+window.onload=function(){
+
+	var iText    =  document.getElementById('iText'),
+		leftPush =  document.getElementById('leftPush'),
+		rightPush=  document.getElementById('rightPush'),
+		rightPop =  document.getElementById('rightPop'),
+		numList  =  document.getElementById('numList'),
+		errorInfo=  document.getElementById('errorInfo'),
+		sortArea =  document.getElementById('sortArea'),
+		sortBtn  =  document.getElementsByTagName('button')[0];
+	var flag =false;
+	var queueArr = [];//定义一个数组队列
+	iText.onblur = function(){
+		var msg        = /^(\s*[0-9]+\s*)$/;
+		var inputValue = iText.value;	
+		if(inputValue.match(msg) == null){
+			flag                = true;
+			errorInfo.innerHTML = "<font color='green'>请保证输入的全部是数字</font>"
+		}else{
+			flag                = false;
+			errorInfo.innerHTML = '';
+		}	
+	}
+	/*
+	* 渲染图形
+	 */
+	function renderChart(arr){
+		sortArea.innerHTML = '';
+		for(attr in arr){
+			var newDiv = document.createElement('div');
+			newDiv.style.width           =   30+'px';
+			newDiv.style.height          =   arr[attr]*7+'px';
+			newDiv.style.display         =   'inline-block';
+			newDiv.style.marginLeft      =   '15px';
+			newDiv.style.backgroundColor =    'red';
+			sortArea.appendChild(newDiv);
+		}
+	}
+	/*
+	+* 入队列函数
+	 */
+	function pushQueue(dir){
+		var msg  = /^[0-9]*$/;
+		var inputValue = iText.value;
+		var spanNode   = document.createElement('span');
+		var tempArr    = []; 
+		spanNode.textContent =parseInt(inputValue);
+		if(dir == 'left'){
+			if(numList.firstElementChild == null){
+				numList.appendChild(spanNode);
+			}else{
+				numList.insertBefore(spanNode,numList.firstElementChild);
+			}
+			tempArr.push(parseInt(inputValue));
+			queueArr = tempArr.concat(queueArr);
+		}else if(dir == 'right'){
+			queueArr.push(parseInt(inputValue));
+			numList.appendChild(spanNode);
+		}
+		renderChart(queueArr); 
+	}
+	/*
+	* 出队函数
+	 */
+	function popQueue(dir){
+		if(dir == 'left'){
+			queueArr.splice(0,1);
+			numList.removeChild(numList.firstElementChild);
+		}else if(dir == 'right'){
+			queueArr.pop(queueArr.length-1);
+			numList.removeChild(numList.lastElementChild);
+		}
+		renderChart(queueArr);
+	}
+	/*
+	* 对矩形进行排序
+	 */ 
+	function sortSquare(){
+		var  a = queueArr;
+        for(var i=0;i<a.length;i++){
+          for(var j=i+1;j<a.length;j++){
+            if(a[i] > a[j]){
+              var temp  = a[i];
+              a[i] = a[j];
+              a[j] = temp;
+              renderChart(a)
+            }
+          }
+        }
+	}
+	leftPush.onclick=function(){
+		if(!flag){
+			pushQueue('left');	
+		}
+	}
+	rightPush.onclick=function(){
+		if(!flag){
+			pushQueue('right');
+		}
+	}
+	leftPop.onclick=function(){
+		popQueue('left');
+	};
+	rightPop.onclick=function(){
+		popQueue('right');
+	};
+	sortBtn.onclick=function(){
+		sortSquare();
+	}
+
+
+}
+</script>
+</body>
+</html>
