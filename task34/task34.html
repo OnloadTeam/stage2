@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task34</title>
+    <script src="Role.js"></script>
+    <script src="MovementManager.js"></script>
+    <link href="task34.css" rel="stylesheet">
+</head>
+<body>
+<div id="main" class="main">
+    <!--<div class="grid"></div>-->
+    <div id="role">
+        <div id="role-head"></div>
+    </div>
+</div>
+<div class="controller">
+    <form action="#">
+        <label for="instruct">Instruct:<input id="instruct" type="text"></label>
+        <button type="submit" id="submit-button">Submit</button>
+    </form>
+</div>
+<script>
+    (function () {
+        var main = document.getElementById("main");
+        var gridNum = 10;
+        initCanvas(main, 660, 660, gridNum);
+
+        var button = document.getElementById("submit-button");
+
+        var role1 = new Role("role", 60, gridNum, gridNum);
+
+        button.onclick = function () {
+            var input = document.getElementById("instruct");
+            console.log("send:" + input.value.toUpperCase());
+            MovementManager.receive(input.value.toUpperCase(), role1);
+        };
+
+        function initCanvas(canvas, x_size, y_size, num) {
+            var n = num + 1;
+            var gridWidth = x_size / n;
+            var gridHeight = y_size / n;
+            for (var i = 0; i < n; i++) {
+                for (var j = 0; j < n; j++) {
+                    var grid = document.createElement("div");
+                    grid.className = "grid";
+                    grid.style.width = gridWidth + "px";
+                    grid.style.height = gridHeight + "px";
+                    if (i == 0 || j == 0) {
+                        grid.style.borderColor = "black";
+                        if (i == 0 && j == 0) {
+                            grid.style.borderBottomWidth = 0 + "px";
+                            grid.style.borderRightWidth = 0 + "px";
+                        }
+                        if (j > 0) {
+                            grid.innerText = j;
+                            grid.style.borderRightWidth = 0 + "px";
+                        }
+                        if (i > 0) {
+                            grid.innerText = i;
+                            grid.style.borderBottomWidth = 0 + "px";
+                        }
+                    }
+                    canvas.appendChild(grid);
+                }
+            }
+
+        }
+    })();
+
+
+</script>
+</body>
+</html>
