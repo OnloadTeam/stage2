@@ -7,8 +7,12 @@
     <script src="MovementManager.js"></script>
     <link href="task35.css" rel="stylesheet">
     <style>
+        #input-panel {
+            position: relative;
+        }
+
         #line-number {
-            position: fixed;
+            position: absolute;
             width: 30px;
             height: 210px;
             background-color: aquamarine;
@@ -63,7 +67,7 @@
                 <textarea id="instructs" spellcheck="false"></textarea>
             </div>
         </label>
-        <button type="submit" id="submit-button">Submit</button>
+        <input type="button" id="submit-button" value="Submit"/>
     </form>
 </div>
 <script>
