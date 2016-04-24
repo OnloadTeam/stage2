@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task35</title>
+    <script src="Role.js"></script>
+    <script src="MovementManager.js"></script>
+    <link href="task35.css" rel="stylesheet">
+    <style>
+        #line-number {
+            position: fixed;
+            width: 30px;
+            height: 210px;
+            background-color: aquamarine;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        #line-number > span {
+            display: block;
+            width: 30px;
+            height: 30px;
+            font-size: 22px;
+            line-height: 30px;
+            color: #555555;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #instructs {
+            position: relative;
+            left: 30px;
+            display: inline-block;
+            width: 400px;
+            height: 210px;
+            background-color: #555555;
+            border-style: none;
+            resize: none;
+
+            font-size: 25px;
+            line-height: 30px;
+            color: azure;
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+<body>
+<div id="main" class="main">
+    <!--<div class="grid"></div>-->
+    <div id="role">
+        <div id="role-head"></div>
+    </div>
+</div>
+<div class="controller">
+    <form action="#">
+        <label for="instructs">
+            Instructs:<br/>
+            <div id="input-panel">
+                <div id="line-number">
+                    <!--<span>1</span>-->
+                </div>
+                <textarea id="instructs" spellcheck="false"></textarea>
+            </div>
+        </label>
+        <button type="submit" id="submit-button">Submit</button>
+    </form>
+</div>
+<script>
+    (function () {
+        var main = document.getElementById("main");
+        var gridNum = 10;
+        var text = document.getElementById("instructs");
+        var strings;
+        var offset = 1;
+        var scroll = 0;
+        initCanvas(main, 660, 660, gridNum);
+
+        var button = document.getElementById("submit-button");
+
+        var role1 = new Role("role", 60, gridNum, gridNum);
+
+        button.onclick = function () {
+            for (var i = 0; i < strings.length; i++) {
+                check(strings[i].toUpperCase().trim(), i);
+            }
+
+        };
+
+        text.onkeyup = function () {
+            strings = text.value.split("\n");
+            renderLine(strings, offset);
+        };
+
+        text.onscroll = function () {
+            if (text.scrollTop > scroll) {
+                offset += 1;
+            } else {
+                offset -= 1;
+            }
+            scroll = text.scrollTop;
+        };
+
+        function check(str, pos) {
+            if (str.substr(0, 2) == "//")
+                return;
+            setTimeout(function () {
+                var orders = str.split(" ");
+                switch (orders[0]) {
+                    case "GO":
+                        if (orders.length == 1 || parseInt(orders[1]) >= 1) {
+                            MovementManager.receive(orders, role1);
+                            return;
+                        }
+                        break;
+                    case "TUN":
+                        if (orders.length == 2) {
+                            MovementManager.receive(orders, role1);
+                            return;
+                        }
+                        break;
+                    case "TRA":
+                    case "MOV":
+                        if (orders.length == 2 || parseInt(orders[2]) >= 1) {
+                            MovementManager.receive(orders, role1);
+                            return
+                        }
+                }
+                var holder = document.getElementById("line-number");
+                holder.children[pos].style.backgroundColor = "red";
+            }, pos * 3000);// the max steps of every instruct is 3000/500=6 since the interval is 3000ms
+
+        }
+
+        function renderLine(strings, offset) {
+            var holder = document.getElementById("line-number");
+            holder.innerHTML = "";
+            var i = offset;
+            for (; i <= strings.length; i++) {
+                var span = document.createElement("span");
+                span.innerText = i;
+                holder.appendChild(span);
+            }
+        }
+
+        function initCanvas(canvas, x_size, y_size, num) {
+            var n = num + 1;
+            var gridWidth = x_size / n;
+            var gridHeight = y_size / n;
+            for (var i = 0; i < n; i++) {
+                for (var j = 0; j < n; j++) {
+                    var grid = document.createElement("div");
+                    grid.className = "grid";
+                    grid.style.width = gridWidth + "px";
+                    grid.style.height = gridHeight + "px";
+                    if (i == 0 || j == 0) {
+                        grid.style.borderColor = "black";
+                        if (i == 0 && j == 0) {
+                            grid.style.borderBottomWidth = 0 + "px";
+                            grid.style.borderRightWidth = 0 + "px";
+                        }
+                        if (j > 0) {
+                            grid.innerText = j;
+                            grid.style.borderRightWidth = 0 + "px";
+                        }
+                        if (i > 0) {
+                            grid.innerText = i;
+                            grid.style.borderBottomWidth = 0 + "px";
+                        }
+                    }
+                    canvas.appendChild(grid);
+                }
+            }
+
+        }
+    })();
+
+
+</script>
+</body>
+</html>
